@@ -38,7 +38,7 @@ var xAxis = d3.svg.axis()
 	.tickPadding(10);
 
 var yAxisLabel = "Crime"
-var yValue = function(d){return d[VIOLENT_CRIME_TOTAL];}; 
+var yValue = function(d){ return d[VIOLENT_CRIME_TOTAL];}; 
 var yScale = d3.scale.linear().range([height, 0]);
 var yMap = function(d){return yScale(yValue(d));};
 var yAxis = d3.svg.axis()
@@ -47,7 +47,7 @@ var yAxis = d3.svg.axis()
 	.tickSize(1)
 	.tickPadding(10);
 
-
+//TODO - radius mapping
 
 function plotInit(){
 	//Domains
@@ -75,14 +75,31 @@ function plotInit(){
 }
 
 
+function drawMarks(){
+	console.log("currentYear");
+	console.log(currentYearData);
+	chart.selectAll(".dot")
+		.data((function(d){//Ugh, really?
+			var result = [];
+			for(var state in d){
+				result.push(currentYearData[state]);
+			}
+			return result;
+		})(currentYearData))
+		.enter()
+		.append("circle")
+		.attr("class", "dot")
+		.attr("r", 10)//TODO
+		.attr("cx", xMap)
+		.attr("cy", yMap)
+		.style("fill", "red"); //TODO
+	
+}
+
 function main(error, data){
 	plotInit();
-
 	currentYearData = data[currentYear];
-
-	for(var state in currentYearData){
-
-	}
+	drawMarks()
 }
 
 

@@ -4,7 +4,25 @@
 			"Population": 3861466,
 			"Violent Crime Total": 17320,
 			"Unemployment": 8.4
+		},
+		"Alaska": {
+			"Population": 440142,
+			"Violent Crime Total": 1919,
+			"Unemployment": 9.4
+		}
+	},
+
+	"1981": {
+		"Alabama":{
+			"Population": 3916000,
+			"Violent Crime Total": 18423,
+			"Unemployment": 9.7
+		},
+
+		"Alaska": {
+			"Population": 412000,
+			"Violent Crime Total": 2537,
+			"Unemployment": 9.1
 		}
 	}
-
 }
