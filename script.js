@@ -8,6 +8,7 @@ var VIOLENT_CRIME_TOTAL = "Violent Crime Total"
 
 var currentYearData = null;
 
+var DATA = null;
 
 var margin = {
 	top: 20,
@@ -18,6 +19,8 @@ var margin = {
 
 var width = 960 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
+
+
 
 var chart = d3.select(".chart")
 	.attr("width", width + margin.left + margin.right)
@@ -49,6 +52,8 @@ var yAxis = d3.svg.axis()
 
 //TODO - radius mapping
 
+
+
 function plotInit(){
 	//Domains
 	xScale.domain([0.0, 100.0]);
@@ -72,12 +77,30 @@ function plotInit(){
 		.attr("dy", ".71em")
 		.style("text-anchor", "end")
 		.text(yAxisLabel);
+	var sliderDiv = d3.select("#slider");
+	sliderDiv.style.width = "100px";
+	sliderDiv.style.height = "100px";
+	slider = sliderDiv.call(d3.slider()
+		.axis(true).
+		min(1980).
+		max(2012).
+		step(1)
+		.on("slide", function(event, value){
+			console.log(value);
+			currentYear = value;
+			if(DATA !== null)
+				drawMarks(DATA);
+		}));
 }
 
 
-function drawMarks(){
+function drawMarks(data){
+	// debugger;
+	currentYearData = data[currentYear];
 	console.log("currentYear");
 	console.log(currentYearData);
+	chart.transition();
+	chart.selectAll(".dot").remove().transition();
 	chart.selectAll(".dot")
 		.data((function(d){//Ugh, really?
 			var result = [];
@@ -96,10 +119,14 @@ function drawMarks(){
 	
 }
 
+
+
 function main(error, data){
+	if(DATA === null)
+		DATA = data;
 	plotInit();
-	currentYearData = data[currentYear];
-	drawMarks()
+	
+	drawMarks(DATA);
 }
 
 
