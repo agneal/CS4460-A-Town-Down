@@ -14,6 +14,7 @@ for yearStateOLD in jOldData:
 	for key in yearStateOLD:
 		if key != "Year" and key != "State":
 			yearStateNEW[key] = yearStateOLD[key]
+	yearStateNEW["Name"] = yearStateOLD["State"]
 	newData[curYear][yearStateOLD["State"]] = yearStateNEW
 
 
