@@ -1,10 +1,13 @@
-var DATA_FILE = "fakeData.json"
+DATA_FILE = "data_new.json"
 var currentYear = 1980; //TODO - probably change this
 
 
 
+VIOLENT_CRIMES = ["Murder and Non-Negligent Manslaughter", "Forcible Rape", "Robbery", "Aggravated Assault"];
+PROPERTY_CRIMES = ["Burglary", "Larceny-Theft", "Motor Vehicle"];
+
 var UNEMPLOYMENT = "Unemployment"
-var VIOLENT_CRIME_TOTAL = "Violent Crime Total"
+
 
 var currentYearData = null;
 
@@ -28,8 +31,23 @@ var chart = d3.select(".chart")
 	.append("g") 
 	.attr("transform", "translate(" + (margin.left) + "," + margin.top + ")");
 
+var dodScatter = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
-var xAxisLabel = "Unemployment"
+
+
+function violentCrimeRate(d){
+	var numCrimes = 0;
+	for(var i=0; i < VIOLENT_CRIMES.length; i++){
+		numCrimes += d[VIOLENT_CRIMES[i]];
+	}
+	return numCrimes
+}
+
+
+
+var xAxisLabel = "Unemployment Rate";
 var xValue = function(d){ return d[UNEMPLOYMENT];};
 var xScale = d3.scale.linear().range([0, width]);
 var xMap = function(d){return xScale(xValue(d));};
@@ -40,8 +58,8 @@ var xAxis = d3.svg.axis()
 	.innerTickSize(0)
 	.tickPadding(10);
 
-var yAxisLabel = "Crime"
-var yValue = function(d){ return d[VIOLENT_CRIME_TOTAL];}; 
+var yAxisLabel = "Violent Crime Rate"
+var yValue = violentCrimeRate;
 var yScale = d3.scale.linear().range([height, 0]);
 var yMap = function(d){return yScale(yValue(d));};
 var yAxis = d3.svg.axis()
@@ -51,13 +69,42 @@ var yAxis = d3.svg.axis()
 	.tickPadding(10);
 
 //TODO - radius mapping
-
+var radius = d3.scale.linear();
 
 
 function plotInit(){
 	//Domains
-	xScale.domain([0.0, 100.0]);
-	yScale.domain([500,40000]);//TODO - calculate dynamically when I have more data
+	xScale.domain([0.0, 25.0]); //ONLY go to 25% for more interesting vis
+	// yScale.domain([500,40000]);//TODO - calculate dynamically when I have more data
+	
+	var minViolent = null;
+	var minProperty = null;
+
+	var maxViolent = null;
+	var maxProperty = null;
+
+	var minPop = null;
+	var maxPop = null;
+	for(var year in DATA){
+		delete DATA[year]["United States"]; //Ignore
+		for(var state in DATA[year]){
+			var rViolent = violentCrimeRate(DATA[year][state]);
+			var pop = DATA[year][state]["Population"];
+			//TODO - property
+			if(minViolent === null || rViolent < minViolent)
+				minViolent = rViolent;
+			if(maxViolent === null || rViolent > maxViolent)
+				maxViolent = rViolent;
+
+			if(minPop === null || pop < minPop)
+				minPop = pop;
+			if(maxPop === null || pop > maxPop)
+				maxPop = pop;
+		}
+	}
+	yScale.domain([minViolent - 50, maxViolent + 50]);
+	radius.domain([0, maxPop]).range([7,22]);
+
 	//x axis
   	chart.append("g")
 		.attr("transform", "translate(0," + height + ")")
@@ -100,7 +147,7 @@ function drawMarks(data){
 	console.log("currentYear");
 	console.log(currentYearData);
 	chart.transition();
-	chart.selectAll(".dot").remove().transition();
+	chart.selectAll(".dot").remove(); //TODO - transition?
 	chart.selectAll(".dot")
 		.data((function(d){//Ugh, really?
 			var result = [];
@@ -112,10 +159,25 @@ function drawMarks(data){
 		.enter()
 		.append("circle")
 		.attr("class", "dot")
-		.attr("r", 10)//TODO
+		.attr("r", function(d){ return radius(d["Population"])})//TODO
 		.attr("cx", xMap)
 		.attr("cy", yMap)
-		.style("fill", "red"); //TODO
+		.style("fill", "red") //TODO
+		.on("mouseover", function(d){
+			dodScatter.transition()
+				.duration(200)
+				.style("opacity", .9);
+			dodScatter.html(
+				d["Name"]
+			)
+			.style("left", (d3.event.pageX + 5) + "px")
+	        .style("top", (d3.event.pageY - 28) + "px");
+		})
+		.on("mouseout", function(d){
+			dodScatter.transition()
+            	.duration(500)
+            	.style("opacity", 0);
+		}); 
 	
 }
 
