@@ -136,9 +136,20 @@ function plotInit(){
 			console.log(value);
 			currentYear = value;
 			if(DATA !== null)
-				drawMarks(DATA);
+				updateMarks();
+				// drawMarks(DATA);
 		}));
 }
+
+
+function dataUnpacker(d){
+	var result = [];
+	for(var state in d){
+		result.push(currentYearData[state]);
+	}
+	return result;
+}
+
 
 
 function drawMarks(data){
@@ -146,20 +157,14 @@ function drawMarks(data){
 	currentYearData = data[currentYear];
 	console.log("currentYear");
 	console.log(currentYearData);
-	chart.transition();
-	chart.selectAll(".dot").remove(); //TODO - transition?
+	// chart.transition().duration(2);
+	// chart.selectAll(".dot").remove(); //TODO - transition?
 	chart.selectAll(".dot")
-		.data((function(d){//Ugh, really?
-			var result = [];
-			for(var state in d){
-				result.push(currentYearData[state]);
-			}
-			return result;
-		})(currentYearData))
+		.data(dataUnpacker(currentYearData))
 		.enter()
 		.append("circle")
 		.attr("class", "dot")
-		.attr("r", function(d){ return radius(d["Population"])})//TODO
+		.attr("r", function(d){ return radius(d["Population"])})
 		.attr("cx", xMap)
 		.attr("cy", yMap)
 		.style("fill", "red") //TODO
@@ -181,7 +186,27 @@ function drawMarks(data){
 	
 }
 
+function updateMarks(){
 
+	chart.selectAll(".dot")
+	chart.selectAll(".dot")
+		.datum(function(prev){
+			return DATA[currentYear][prev["Name"]];
+		})
+	// d3.selectAll("circle")
+		// .data(dataUnpacker(DATA[currentYear]))
+		// .enter()
+		// .select("circle")
+		.transition()
+		.duration(200)
+		// .ease(Math.sqrt)
+		.attr("r", function(d){ return radius(d["Population"])})
+		.attr("cx", xMap)
+		.attr("cy", yMap);
+		// .style("fill", "blue");
+
+	console.log("transition");
+}
 
 function main(error, data){
 	if(DATA === null)
