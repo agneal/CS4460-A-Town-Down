@@ -85,7 +85,7 @@ function plotInit(){
 
 	var minPop = null;
 	var maxPop = null;
-	for(var year in DATA){
+	for(var year in DATA){//Maybe do this year by year, and adjust axes accordingly
 		delete DATA[year]["United States"]; //Ignore
 		for(var state in DATA[year]){
 			var rViolent = violentCrimeRate(DATA[year][state]);
