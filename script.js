@@ -132,18 +132,19 @@ function plotInit(){
 	var sliderDiv = d3.select("#slider");
 	sliderDiv.style.width = "100px";
 	sliderDiv.style.height = "100px";
-	slider = sliderDiv.call(d3.slider()
+	slider = d3.slider()
 		.axis(true).
 		min(1980).
 		max(2012).
 		step(1)
-		.on("slide", function(event, value){
-			console.log(value);
-			currentYear = value;
-			if(DATA !== null)
-				updateMarks();
-				// drawMarks(DATA);
-		}));
+		.on("slide", sliderChanged);
+	sliderDiv.call(slider);
+}
+
+function sliderChanged(event, value){
+	currentYear = value
+	if(DATA !== null)
+		updateMarks();
 }
 
 
@@ -206,7 +207,7 @@ function drawMarks(data){
 		.attr("y", 9)
 		.attr("dy", ".35em")
 		.style("text-anchor", "end")
-		.text(function(d) { console.log(d); return d;})
+		.text(function(d) {return d;})
 	
 }
 
@@ -241,3 +242,14 @@ function main(error, data){
 
 
 d3.json(DATA_FILE, main);
+
+//Doesn't work
+function play(){
+	//Hardcoded. Maybe change later??
+	for(var val = 1980; val < 2012; val++){
+		slider.value(val);
+		slider.on("slide")(null, val);
+
+		val += 1;
+	}
+}
