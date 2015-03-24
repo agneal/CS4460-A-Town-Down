@@ -5,8 +5,10 @@ var currentYear = 1980; //TODO - probably change this
 
 VIOLENT_CRIMES = ["Murder and Non-Negligent Manslaughter", "Forcible Rape", "Robbery", "Aggravated Assault"];
 PROPERTY_CRIMES = ["Burglary", "Larceny-Theft", "Motor Vehicle"];
+//State regions from http://en.wikipedia.org/wiki/List_of_regions_of_the_United_States#Census_Bureau-designated_regions_and_divisions
+STATE_REGION = {"Alabama": "East South Central","Alaska": "Pacific","Arizona": "Mountain","Arkansas": "West South Central","California": "Pacific","Colorado": "Mountain","Connecticut": "New England","Delaware": "South Atlantic","District of Columbia": "South Atlantic", "Florida": "South Atlantic","Georgia": "South Atlantic","Hawaii": "Pacific","Idaho": "Mountain","Illinois": "East North Central","Indiana": "East North Central","Iowa": "West Noth Central","Kansas": "West North Central","Kentucky": "East South Central","Louisiana": "West South Central","Maine": "New England","Maryland": "South Atlantic","Massachusetts": "New England","Michigan": "East North Central","Minnesota": "West North Central","Mississippi": "East South Central","Missouri": "West North Central","Montana": "Mountain","Nebraska": "West North Central","Nevada": "Mountain","New Hampshire": "New England","New Jersey": "Mid-Atlantic","New Mexico": "Mountain","New York": "Mid-Atlantic","North Carolina": "South Atlantic","North Dakota": "West North Central","Ohio": "East North Central","Oklahoma": "West South Central","Oregon": "Pacific","Pennsylvania": "Mid-Atlantic", "Rhode Island": "New England","South Carolina":"South Atlantic", "South Dakota": "West North Central","Tennessee": "East South Central","Texas": "West South Central","Utah": "Mountain","Vermont": "New England","Virginia": "South Atlantic","Washington": "Pacific","West Virginia": "South Atlantic","Wisconsin": "East North Central","Wyoming": "Mountain",};
 
-var UNEMPLOYMENT = "Unemployment"
+var UNEMPLOYMENT = "Unemployment";
 
 
 var currentYearData = null;
@@ -71,6 +73,9 @@ var yAxis = d3.svg.axis()
 //TODO - radius mapping
 var radius = d3.scale.linear();
 
+
+var cValue = function(d){return STATE_REGION[d["Name"]];};
+var colors = d3.scale.category10();
 
 function plotInit(){
 	//Domains
@@ -167,7 +172,7 @@ function drawMarks(data){
 		.attr("r", function(d){ return radius(d["Population"])})
 		.attr("cx", xMap)
 		.attr("cy", yMap)
-		.style("fill", "red") //TODO
+		.style("fill", function(d){return colors(cValue(d))})
 		.on("mouseover", function(d){
 			dodScatter.transition()
 				.duration(200)
@@ -182,13 +187,31 @@ function drawMarks(data){
 			dodScatter.transition()
             	.duration(500)
             	.style("opacity", 0);
-		}); 
+		});
+	var legend = chart.selectAll(".legend")
+		.data(colors.domain())
+		.enter().append("g")
+		.attr("class", "legend")
+		.attr("transform", function(d, i) {return "translate(10," + (i*40) + ")"; });
+
+	legend.append("rect")
+		.attr("x", width - 18)
+		.attr("width", 18)
+		.attr("height", 18)
+		.style("fill", colors);
+
+      // draw legend text
+	legend.append("text")
+		.attr("x", width - 24)
+		.attr("y", 9)
+		.attr("dy", ".35em")
+		.style("text-anchor", "end")
+		.text(function(d) { console.log(d); return d;})
 	
 }
 
 function updateMarks(){
 
-	chart.selectAll(".dot")
 	chart.selectAll(".dot")
 		.datum(function(prev){
 			return DATA[currentYear][prev["Name"]];
