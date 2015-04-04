@@ -6,8 +6,7 @@ var currentYear = 1980; //TODO - probably change this
 VIOLENT_CRIMES = ["Murder and Non-Negligent Manslaughter", "Forcible Rape", "Robbery", "Aggravated Assault"];
 PROPERTY_CRIMES = ["Burglary", "Larceny-Theft", "Motor Vehicle"];
 //State regions from http://en.wikipedia.org/wiki/List_of_regions_of_the_United_States#Census_Bureau-designated_regions_and_divisions
-STATE_REGION = {"Alabama": "East South Central","Alaska": "Pacific","Arizona": "Mountain","Arkansas": "West South Central","California": "Pacific","Colorado": "Mountain","Connecticut": "New England","Delaware": "South Atlantic","District of Columbia": "South Atlantic", "Florida": "South Atlantic","Georgia": "South Atlantic","Hawaii": "Pacific","Idaho": "Mountain","Illinois": "East North Central","Indiana": "East North Central","Iowa": "West Noth Central","Kansas": "West North Central","Kentucky": "East South Central","Louisiana": "West South Central","Maine": "New England","Maryland": "South Atlantic","Massachusetts": "New England","Michigan": "East North Central","Minnesota": "West North Central","Mississippi": "East South Central","Missouri": "West North Central","Montana": "Mountain","Nebraska": "West North Central","Nevada": "Mountain","New Hampshire": "New England","New Jersey": "Mid-Atlantic","New Mexico": "Mountain","New York": "Mid-Atlantic","North Carolina": "South Atlantic","North Dakota": "West North Central","Ohio": "East North Central","Oklahoma": "West South Central","Oregon": "Pacific","Pennsylvania": "Mid-Atlantic", "Rhode Island": "New England","South Carolina":"South Atlantic", "South Dakota": "West North Central","Tennessee": "East South Central","Texas": "West South Central","Utah": "Mountain","Vermont": "New England","Virginia": "South Atlantic","Washington": "Pacific","West Virginia": "South Atlantic","Wisconsin": "East North Central","Wyoming": "Mountain",};
-
+STATE_REGION = {"Alabama": "South", "Alaska": "West", "Arizona": "West", "Arkansas": "South", "California": "West", "Colorado": "West", "Connecticut": "Northeast", "Delaware": "South", "District of Columbia": "South", "Florida": "South", "Georgia": "South", "Hawaii": "West", "Idaho": "West", "Illinois": "Midwest", "Indiana": "Midwest", "Iowa": "Midwest", "Kansas": "Midwest", "Kentucky": "South", "Louisiana": "South", "Maine": "Northeast", "Maryland": "South", "Massachusetts": "Northeast", "Michigan": "Midwest", "Minnesota": "Midwest", "Mississippi": "South", "Missouri": "Midwest", "Montana": "West", "Nebraska": "Midwest", "Nevada": "West", "New Hampshire": "Northeast", "New Jersey": "Northeast", "New Mexico": "West", "New York": "Northeast", "North Carolina": "South", "North Dakota": "Midwest", "Ohio": "Midwest", "Oklahoma": "South", "Oregon": "West", "Pennsylvania": "Northeast", "Rhode Island": "Northeast", "South Carolina": "South", "South Dakota": "Midwest", "Tennessee": "South", "Texas": "South", "Utah": "West", "Vermont": "Northeast", "Virginia": "South", "Washington": "West", "West Virginia": "South", "Wisconsin": "Midwest", "Wyoming": "West"};
 var UNEMPLOYMENT = "Unemployment";
 
 
@@ -19,10 +18,10 @@ var margin = {
 	top: 20,
 	right: 20,
 	bottom: 30,
-	left: 90,
+	left: 50,
 };
 
-var width = 960 - margin.left - margin.right;
+var width = 760 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
 
 
@@ -79,7 +78,7 @@ var colors = d3.scale.category10();
 
 function plotInit(){
 	//Domains
-	xScale.domain([0.0, 25.0]); //ONLY go to 25% for more interesting vis
+	xScale.domain([0.0, 19.0]); //ONLY go to 25% for more interesting vis
 	// yScale.domain([500,40000]);//TODO - calculate dynamically when I have more data
 	
 	var minViolent = null;
@@ -193,17 +192,17 @@ function drawMarks(data){
 		.data(colors.domain())
 		.enter().append("g")
 		.attr("class", "legend")
-		.attr("transform", function(d, i) {return "translate(10," + (i*40) + ")"; });
+		.attr("transform", function(d, i) {return "translate(20," + (i*40) + ")"; });
 
 	legend.append("rect")
-		.attr("x", width - 18)
+		.attr("x", width - 60)
 		.attr("width", 18)
 		.attr("height", 18)
 		.style("fill", colors);
 
       // draw legend text
 	legend.append("text")
-		.attr("x", width - 24)
+		.attr("x", width - 65)
 		.attr("y", 9)
 		.attr("dy", ".35em")
 		.style("text-anchor", "end")
