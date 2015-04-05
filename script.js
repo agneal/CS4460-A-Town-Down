@@ -12,6 +12,10 @@ STATE_COLORS = {"0":"#fee5d9", "1":"#fcbba1", "2":"#fc9272", "3":"#fb6a4a", "4":
 NUM_DIVISIONS = 7;
 var UNEMPLOYMENT = "Unemployment";
 
+var screenWidth = screen.availWidth;
+console.log("SCREEN WIDTH" + (screenWidth/2));
+// chart.style.width = (screenWidth/2 - 10) + "px";
+document.getElementById("map").style.width = (screenWidth/2 - 100) + "px";
 
 
 
@@ -26,7 +30,7 @@ var margin = {
 	left: 50,
 };
 
-var width = 760 - margin.left - margin.right;
+var width = (screenWidth/2) - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
 
 
@@ -49,6 +53,7 @@ var map = new Datamap({
 		highlightBorderColor: '#000'
 	}
 });
+
 
 var dodScatter = d3.select("body").append("div")
     .attr("class", "tooltip")
