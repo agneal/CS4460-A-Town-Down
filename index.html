@@ -12,6 +12,18 @@
     </head>
     <body>
         <p class="title"><strong>Crime by State</strong></p>
+        <select name="Y-Axis Variable" class="dropdown">
+            <option value="violentCrime">All Violent Crime</option>
+            <option value="murder">Murder and Non-Negligent Manslaughter</option>
+            <option value="rape">Forcible Rape</option>
+            <option value="robbery">Robbery</option>
+            <option name="assault">Aggravated Assault</option>
+            <option name="divider" disabled="">------</option>
+            <option name="propertyCrime">All Property Crime</option>
+            <option name ="burglary">Burglary</option>
+            <option name="larceny"> Larceny-Theft</option>
+            <option name="motorVehicle">Motor Vehicle</option>
+        </select>
         <div id="vis_wrapper">
             <svg class="chart"></svg>
             <svg class="map" id="map"></svg> 

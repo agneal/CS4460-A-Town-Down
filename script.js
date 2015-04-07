@@ -54,6 +54,28 @@ var map = new Datamap({
 	}
 });
 
+var dropdown = d3.select(".dropdown")
+	.on("change", function(val){
+		var newYaxisVal = this.options[this.selectedIndex].innerText;
+		console.log(newYaxisVal);
+		if(newYaxisVal === "All Property Crime")
+			yValue = propertyCrimeRate; //TODO
+		else if(newYaxisVal === "All Violent Crime")
+			yValue = violentCrimeRate;
+		else
+			yValue = singleCrimeClosure(newYaxisVal);
+		calculateYDomain();
+		chart.select(".yaxis")
+			.transition()
+			.duration(200)
+			.ease("sin-in-out")
+			.call(yAxis);
+			// .text("CHANGED");
+		chart.select(".yaxislabel").text(newYaxisVal);
+		updateMarks();
+
+	});
+
 
 var dodScatter = d3.select("body").append("div")
     .attr("class", "tooltip")
@@ -61,14 +83,27 @@ var dodScatter = d3.select("body").append("div")
 
 
 
-function violentCrimeRate(d){
-	var numCrimes = 0;
-	for(var i=0; i < VIOLENT_CRIMES.length; i++){
-		numCrimes += d[VIOLENT_CRIMES[i]];
+
+
+function aggregateCrimeClosure(array){
+	return function(d){
+		var numCrimes = 0;
+		for(var i=0; i < array.length; i++){
+			numCrimes += d[array[i]];
+		}
+		return numCrimes
 	}
-	return numCrimes
 }
 
+function singleCrimeClosure(label){
+	return function(d){
+		return d[label];
+	}
+}
+
+var violentCrimeRate = aggregateCrimeClosure(VIOLENT_CRIMES);
+
+var propertyCrimeRate = aggregateCrimeClosure(PROPERTY_CRIMES);
 
 
 var xAxisLabel = "Unemployment Rate";
@@ -92,6 +127,9 @@ var yAxis = d3.svg.axis()
 	.tickSize(1)
 	.tickPadding(10);
 
+
+yAxisSVG = null;
+
 //TODO - radius mapping
 var radius = d3.scale.linear();
 
@@ -101,6 +139,23 @@ var colors = d3.scale.category10();
 
 var yCategoryMin = null;
 var yCategoryMax = null;
+
+function calculateYDomain(){
+	var minVal = null;
+	var maxVal = null;
+	for(var year in DATA){
+		var yearData = DATA[year]
+		for(var state in yearData){
+			var cur = yValue(yearData[state]);
+			if(minVal === null || cur < minVal)
+				minVal = cur;
+			if(maxVal === null || cur > maxVal)
+				maxVal = cur;
+		}
+	}
+	yScale.domain([Math.max(minVal - 50, 0), maxVal + 50]);
+}
+
 
 
 function plotInit(){
@@ -119,14 +174,7 @@ function plotInit(){
 	for(var year in DATA){
 		delete DATA[year]["United States"]; //Ignore
 		for(var state in DATA[year]){
-			var rViolent = violentCrimeRate(DATA[year][state]);
 			var pop = DATA[year][state]["Population"];
-			//TODO - property
-			//Actually, no recalculate y axis domain when its variable is changed
-			if(minViolent === null || rViolent < minViolent)
-				minViolent = rViolent;
-			if(maxViolent === null || rViolent > maxViolent)
-				maxViolent = rViolent;
 
 			if(minPop === null || pop < minPop)
 				minPop = pop;
@@ -136,7 +184,8 @@ function plotInit(){
 	}//TODO - overhaul this thing
 	yCategoryMax = maxViolent;
 	yCategoryMin = minViolent;
-	yScale.domain([minViolent - 50, maxViolent + 50]);
+	// yScale.domain([minViolent - 50, maxViolent + 50]);
+	calculateYDomain();
 	radius.domain([0, maxPop]).range([7,22]);
 
 	//x axis
@@ -150,9 +199,11 @@ function plotInit(){
 		.text(xAxisLabel);
 
 	//y axis
-	chart.append("g")
+	yAxisSVG = chart.append("g").attr("class", "yaxis");
+	yAxisSVG
 		.call(yAxis)
 		.append("text")
+		.attr("class", "yaxislabel")
 		.attr("transform", "rotate(-90)")
 		.attr("y", 6) //6
 		.attr("dy", ".71em")
@@ -274,11 +325,12 @@ function updateMarks(){
 		if(min == null || min > val)
 			min = val;
 	}//Is this necessary? Or can we use global (regardless of year) min/max for the yValue
-
+	console.log("MIN "+min+", MAX "+max);
 	for(var state in currentYearData){
 		var value = yValue(currentYearData[state]);
 
-		var idx = ((value - min) / (yCategoryMax - min)) * (NUM_DIVISIONS-1);
+		var idx = ((value - min) / (max - min)) * (NUM_DIVISIONS-1);
+		console.log("OLD "+idx);
 		idx = (Math.ceil(idx));//I'm not really feelin' this way of doing divisions
 		//TODO - replace ^ 
 		console.log(idx);
