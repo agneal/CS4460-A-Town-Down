@@ -353,13 +353,16 @@ function updateMarks(){
 	}//Is this necessary? Or can we use global (regardless of year) min/max for the yValue
 	console.log("MIN "+min+", MAX "+max);
 	for(var state in currentYearData){
-		var value = yValue(currentYearData[state]);
+		var idx=-1;
+		if(focus_state == null || focus_state.Name == state){
+			var value = yValue(currentYearData[state]);
 
-		var idx = ((value - min) / (max - min)) * (NUM_DIVISIONS-1);
-		console.log("OLD "+idx);
-		idx = (Math.ceil(idx));//I'm not really feelin' this way of doing divisions
-		//TODO - replace ^ 
-		console.log(idx);
+			idx = ((value - min) / (max - min)) * (NUM_DIVISIONS-1);
+			console.log("OLD "+idx);
+			idx = (Math.ceil(idx));
+
+		}
+
 		mapColors[STATE_SYMBOLS[state]] = {"fillKey" : idx+""};
 	}
 	// console.log(colors)
