@@ -332,6 +332,8 @@ function updateMarks(){
 			if(focus_state == null || focus_state.Name == d.Name) return 0.9;
 			return 0.0;
 		});
+
+		//TODO - change radius to 0 for invisible marks to try to prevent mouseover bug
 		// .style("fill", "blue");
 	var currentYearData = DATA[currentYear];
 
