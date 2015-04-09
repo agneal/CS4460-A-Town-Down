@@ -14,7 +14,7 @@
 
 .dot {
 	stroke: black;
-	opacity: .9;
+	/*opacity: .9;*/
 	box-shadow: 10px -10px #CCC;
 }
 

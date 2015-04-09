@@ -18,6 +18,8 @@ console.log("SCREEN WIDTH" + (screenWidth/2));
 document.getElementById("map").style.width = (screenWidth/2 - 100) + "px";
 
 
+var focus_state = null;
+
 
 var currentYearData = null;
 
@@ -236,6 +238,25 @@ function dataUnpacker(d){
 	return result;
 }
 
+function plotDetailsOnDemand(d){
+	if(focus_state == null || (focus_state.Name == d.Name)){
+		// return;
+		dodScatter.transition()
+			.duration(200)
+			.style("opacity", .9);
+		dodScatter.html(
+			d["Name"]
+		)
+		.style("left", (d3.event.pageX + 5) + "px")
+	    .style("top", (d3.event.pageY - 28) + "px");
+	}
+}
+
+function hidePlotDetailsOnDemand(d){
+	dodScatter.transition()
+		.duration(500)
+		.style("opacity", 0);
+}
 
 
 function drawMarks(data){
@@ -254,20 +275,17 @@ function drawMarks(data){
 		.attr("cx", xMap)
 		.attr("cy", yMap)
 		.style("fill", function(d){return colors(cValue(d))})
-		.on("mouseover", function(d){
-			dodScatter.transition()
-				.duration(200)
-				.style("opacity", .9);
-			dodScatter.html(
-				d["Name"]
-			)
-			.style("left", (d3.event.pageX + 5) + "px")
-	        .style("top", (d3.event.pageY - 28) + "px");
-		})
-		.on("mouseout", function(d){
-			dodScatter.transition()
-            	.duration(500)
-            	.style("opacity", 0);
+		.on("mouseover", plotDetailsOnDemand)
+		.on("mouseout",hidePlotDetailsOnDemand)
+		.on("mousedown", function(d){
+			console.log("mousedown "+d.Name)
+			if(focus_state == null){
+				focus_state = d;
+			}
+			else if(focus_state.Name===d.Name){
+					focus_state = null;
+			}
+			updateMarks();
 		});
 	var legend = chart.selectAll(".legend")
 		.data(colors.domain())
@@ -307,7 +325,13 @@ function updateMarks(){
 		// .ease(Math.sqrt)
 		.attr("r", function(d){ return radius(d["Population"])})
 		.attr("cx", xMap)
-		.attr("cy", yMap);
+		.attr("cy", yMap)
+		.style("opacity",function(d){
+			// console.log(d);
+			// console.log(focus_state);
+			if(focus_state == null || focus_state.Name == d.Name) return 0.9;
+			return 0.0;
+		});
 		// .style("fill", "blue");
 	var currentYearData = DATA[currentYear];
 
