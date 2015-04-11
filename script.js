@@ -55,7 +55,7 @@ var map = new Datamap({
 		highlightBorderColor: '#000'
 	}
 });
-
+var dropdownVal = "All Violent Crime";
 var dropdown = d3.select(".dropdown")
 	.on("change", function(val){
 		var newYaxisVal = this.options[this.selectedIndex].innerText;
@@ -75,13 +75,12 @@ var dropdown = d3.select(".dropdown")
 			// .text("CHANGED");
 		chart.select(".yaxislabel").text(newYaxisVal);
 		updateMarks();
+		dropdownVal = newYaxisVal;
 
 	});
 
 
-var dodScatter = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+var dodScatter = null;
 
 
 
@@ -189,6 +188,18 @@ function plotInit(){
 	// yScale.domain([minViolent - 50, maxViolent + 50]);
 	calculateYDomain();
 	radius.domain([0, maxPop]).range([7,22]);
+	var sliderDiv = d3.select("#slider");
+	sliderDiv.style.width = "100px";
+	sliderDiv.style.height = "100px";
+	slider = d3.slider()
+		.axis(true).
+		min(1980).
+		max(2012).
+		step(1)
+		.on("slide", sliderChanged);
+	dodScatter =  d3.select("body").append("div")//WTF? Line errors with slider
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
 	//x axis
   	chart.append("g")
@@ -211,15 +222,6 @@ function plotInit(){
 		.attr("dy", ".71em")
 		.style("text-anchor", "end")
 		.text(yAxisLabel);
-	var sliderDiv = d3.select("#slider");
-	sliderDiv.style.width = "100px";
-	sliderDiv.style.height = "100px";
-	slider = d3.slider()
-		.axis(true).
-		min(1980).
-		max(2012).
-		step(1)
-		.on("slide", sliderChanged);
 	sliderDiv.call(slider);
 }
 
@@ -244,12 +246,35 @@ function plotDetailsOnDemand(d){
 		dodScatter.transition()
 			.duration(200)
 			.style("opacity", .9);
-		dodScatter.html(
-			d["Name"]
-		)
+		dodScatter.html(dodHTML(d))
 		.style("left", (d3.event.pageX + 5) + "px")
 	    .style("top", (d3.event.pageY - 28) + "px");
 	}
+}
+
+function dodHTML(d){
+	var html = d["Name"] + "<hr />";
+	if(dropdownVal == "All Violent Crime"){
+		html += textPercentages(d, VIOLENT_CRIMES);
+	}
+	else if (dropdownVal === "All Property Crime"){
+		html += textPercentages(d, PROPERTY_CRIMES);
+	}
+	else{
+		html += "<p>"+dropdownVal+": "+yValue(d)+" incidents / 10k people</p>";
+	}
+	return html;
+		
+}
+
+function textPercentages(d, arr){
+	var text="";
+	var total = violentCrimeRate(d);
+	for(var i = 0; i < arr.length; i++){
+		var crime = arr[i];
+		text += "<p>" + (100 * (singleCrimeClosure(crime)(d)/total)).toPrecision(3)+"% "+crime+"</p>";
+	}
+	return text;
 }
 
 function hidePlotDetailsOnDemand(d){
