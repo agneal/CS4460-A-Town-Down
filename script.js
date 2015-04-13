@@ -242,7 +242,7 @@ function plotInit(){
 
 	var mapLegend = d3.select("#map").append("g");
 	mapLegend.attr("class", "xaxis")
-		.attr("transform", "translate(10," + 10+")")
+		.attr("transform", "translate(80," + 10+")")
 		.call(mapColorAxis);
 		// .append("text")
 		// .attr("x", 0)
@@ -260,7 +260,7 @@ function plotInit(){
 				"fill": STATE_COLORS[d],
 				"stroke":"#000",
 			});
-			console.log("FOREACH "+d);
+			// console.log("FOREACH "+d);
 	}
 
 	sliderDiv.call(slider);
@@ -414,36 +414,43 @@ function updateMarks(){
 		if(min == null || min > val)
 			min = val;
 	}
-	//TODO - probably replace with mapColorScale function??
-	console.log("MIN "+min+", MAX "+max);
-	for(var state in currentYearData){
-		var idx=-1;
-		if(focus_state == null || focus_state.Name == state){
-			var value = yValue(currentYearData[state]);
-
-			idx = ((value - min) / (max - min)) * (NUM_DIVISIONS-1);
-			// console.log("OLD "+idx);
-			idx = (Math.ceil(idx));
-		}
-		mapColors[STATE_SYMBOLS[state]] = {"fillKey" : idx+""};
-	}
-	// console.log(colors)
-	map.updateChoropleth(mapColors);
+	console.log("min "+min+", max "+max);
 
 	//Color legend (this is gonna be rough)
-	// var mapLegend = d3.select("body").append(svg);
 	var newDomain = [];
 	for(var i = 0; i <= 7; i++){
 		newDomain.push( Math.floor(min+ ((max-min)/7)*i));
 	}
-	console.log("DOMAIN"+newDomain);
 	mapColorScale.domain(newDomain);
-	// mapColorScale.domain([0,1,2,3,4,5,6,7]);
 	
 	d3.select("#map").select(".xaxis")
 		.transition()
 		.duration(200)
 		.call(mapColorAxis);
+
+	for(var state in currentYearData){
+		var idx=-1;
+		if(focus_state == null || focus_state.Name == state){
+			var value = yValue(currentYearData[state]);
+
+			// idx = ((value - min) / (max - min)) * (NUM_DIVISIONS-1);
+			// // console.log("OLD "+idx);
+			// idx = (Math.ceil(idx));
+			var idx = 0;
+			for(var i = 0; i < 7; i++){
+				if(value > mapColorScale.domain()[i]){
+					idx = i;
+					if(idx === 6)console.log("SIX");
+				}
+				else{
+					break;
+				}
+			}
+		}
+		mapColors[STATE_SYMBOLS[state]] = {"fillKey" : idx+""};
+	}
+
+	map.updateChoropleth(mapColors);
 
 
 }
