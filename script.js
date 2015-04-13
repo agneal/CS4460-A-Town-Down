@@ -118,7 +118,7 @@ var xAxis = d3.svg.axis()
 	.innerTickSize(0)
 	.tickPadding(10);
 
-var yAxisLabel = "Violent Crime Rate"
+var yAxisLabel = "All Violent Crime";
 var yValue = violentCrimeRate;
 var yScale = d3.scale.linear().range([height, 0]);
 var yMap = function(d){return yScale(yValue(d));};
@@ -134,6 +134,18 @@ yAxisSVG = null;
 //TODO - radius mapping
 var radius = d3.scale.linear();
 
+
+var mapColorValue = function(d){ return yValue(d) };//TODO
+var mapColorScale = d3.scale.ordinal().range([0,100,200,300,400,500,600,700]);
+var mapColorAxis = d3.svg.axis()
+	.scale(mapColorScale)
+	.orient("bottom")
+	.tickFormat(d3.format("d"))
+	.outerTickSize(1)
+	.innerTickSize(2)
+	.tickPadding(1);
+
+var mapColorMap = function(d){return mapColorScale(mapColorValue(d))};
 
 var cValue = function(d){return STATE_REGION[d["Name"]];};
 var colors = d3.scale.category10();
@@ -155,6 +167,8 @@ function calculateYDomain(){
 		}
 	}
 	yScale.domain([Math.max(minVal - 50, 0), maxVal + 50]);
+
+	// mapColorScale.domain([minVal, maxVal]); //Will be changed later in the code?
 }
 
 
@@ -222,7 +236,21 @@ function plotInit(){
 		.attr("dy", ".71em")
 		.style("text-anchor", "end")
 		.text(yAxisLabel);
+
+
+
+	d3.select("#map").append("g").attr("class", "xaxis")
+		.attr("transform", "translate(0," + 10+")")
+		.call(mapColorAxis);
+		// .append("text")
+		// .attr("x", 0)
+		// .attr("y", 0) //-6
+		// .style("text-anchor", "end")
+		// .text("TEST");
+
 	sliderDiv.call(slider);
+
+
 }
 
 function sliderChanged(event, value){
@@ -253,7 +281,7 @@ function plotDetailsOnDemand(d){
 }
 
 function dodHTML(d){
-	var html = d["Name"] + "<hr />";
+	var html = d["Name"] + " -- "+d["Population"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " people<hr />";
 	if(dropdownVal == "All Violent Crime"){
 		html += textPercentages(d, VIOLENT_CRIMES);
 	}
@@ -330,7 +358,10 @@ function drawMarks(data){
 		.attr("y", 9)
 		.attr("dy", ".35em")
 		.style("text-anchor", "end")
-		.text(function(d) {return d;})
+		.text(function(d) {return d;});
+
+
+
 	updateMarks();
 	
 }
@@ -341,25 +372,17 @@ function updateMarks(){
 		.datum(function(prev){
 			return DATA[currentYear][prev["Name"]];
 		})
-	// d3.selectAll("circle")
-		// .data(dataUnpacker(DATA[currentYear]))
-		// .enter()
-		// .select("circle")
 		.transition()
 		.duration(200)
-		// .ease(Math.sqrt)
 		.attr("r", function(d){ return radius(d["Population"])})
 		.attr("cx", xMap)
 		.attr("cy", yMap)
 		.style("opacity",function(d){
-			// console.log(d);
-			// console.log(focus_state);
 			if(focus_state == null || focus_state.Name == d.Name) return 0.9;
 			return 0.0;
 		});
 
-		//TODO - change radius to 0 for invisible marks to try to prevent mouseover bug
-		// .style("fill", "blue");
+		//TODO - change radius to 0 for invisible marks to try to prevent mouseover bug?
 	var currentYearData = DATA[currentYear];
 
 	// console.log("transition");
@@ -375,7 +398,8 @@ function updateMarks(){
 			max = val;
 		if(min == null || min > val)
 			min = val;
-	}//Is this necessary? Or can we use global (regardless of year) min/max for the yValue
+	}
+	//TODO - probably replace with mapColorScale function??
 	console.log("MIN "+min+", MAX "+max);
 	for(var state in currentYearData){
 		var idx=-1;
@@ -383,15 +407,29 @@ function updateMarks(){
 			var value = yValue(currentYearData[state]);
 
 			idx = ((value - min) / (max - min)) * (NUM_DIVISIONS-1);
-			console.log("OLD "+idx);
+			// console.log("OLD "+idx);
 			idx = (Math.ceil(idx));
-
 		}
-
 		mapColors[STATE_SYMBOLS[state]] = {"fillKey" : idx+""};
 	}
 	// console.log(colors)
 	map.updateChoropleth(mapColors);
+
+	//Color legend (this is gonna be rough)
+	// var mapLegend = d3.select("body").append(svg);
+	var newDomain = [];
+	for(var i = 0; i <= 7; i++){
+		newDomain.push(min+ ((max-min)/7)*i);
+	}
+	console.log("DOMAIN"+newDomain);
+	mapColorScale.domain(newDomain);
+	
+	d3.select("#map").select(".xaxis")
+		.transition()
+		.duration(200)
+		.call(mapColorAxis);
+
+
 }
 
 function main(error, data){
