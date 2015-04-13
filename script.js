@@ -136,14 +136,15 @@ var radius = d3.scale.linear();
 
 
 var mapColorValue = function(d){ return yValue(d) };//TODO
-var mapColorScale = d3.scale.ordinal().range([0,100,200,300,400,500,600,700]);
+var mapColorScale = d3.scale.ordinal().range([0, 50, 100, 150, 200, 250, 300, 350]);
 var mapColorAxis = d3.svg.axis()
 	.scale(mapColorScale)
-	.orient("bottom")
+	.orient("top")
 	.tickFormat(d3.format("d"))
 	.outerTickSize(1)
 	.innerTickSize(2)
-	.tickPadding(1);
+	.tickPadding(0)
+	.ticks(8);
 
 var mapColorMap = function(d){return mapColorScale(mapColorValue(d))};
 
@@ -239,14 +240,28 @@ function plotInit(){
 
 
 
-	d3.select("#map").append("g").attr("class", "xaxis")
-		.attr("transform", "translate(0," + 10+")")
+	var mapLegend = d3.select("#map").append("g");
+	mapLegend.attr("class", "xaxis")
+		.attr("transform", "translate(10," + 10+")")
 		.call(mapColorAxis);
 		// .append("text")
 		// .attr("x", 0)
 		// .attr("y", 0) //-6
 		// .style("text-anchor", "end")
 		// .text("TEST");
+
+	for(var d in [0,1,2,3,4,5,6]){
+		mapLegend.append("rect")
+			.attr({
+				"x": d*50,
+				"y": 0,
+				"width": 50,
+				"height": 10,
+				"fill": STATE_COLORS[d],
+				"stroke":"#000",
+			});
+			console.log("FOREACH "+d);
+	}
 
 	sliderDiv.call(slider);
 
@@ -419,10 +434,11 @@ function updateMarks(){
 	// var mapLegend = d3.select("body").append(svg);
 	var newDomain = [];
 	for(var i = 0; i <= 7; i++){
-		newDomain.push(min+ ((max-min)/7)*i);
+		newDomain.push( Math.floor(min+ ((max-min)/7)*i));
 	}
 	console.log("DOMAIN"+newDomain);
 	mapColorScale.domain(newDomain);
+	// mapColorScale.domain([0,1,2,3,4,5,6,7]);
 	
 	d3.select("#map").select(".xaxis")
 		.transition()
