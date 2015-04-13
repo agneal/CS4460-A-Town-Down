@@ -312,7 +312,7 @@ function dodHTML(d){
 
 function textPercentages(d, arr){
 	var text="";
-	var total = violentCrimeRate(d);
+	var total = yValue(d);
 	for(var i = 0; i < arr.length; i++){
 		var crime = arr[i];
 		text += "<p>" + (100 * (singleCrimeClosure(crime)(d)/total)).toPrecision(3)+"% "+crime+"</p>";
