@@ -53,7 +53,19 @@ var map = new Datamap({
 		borderColor: "#444",
 		highlightOnHover: true,
 		highlightFillColor: "#aaebff",
-		highlightBorderColor: '#000'
+		highlightBorderColor: '#000',
+		// popupOnHover: true,
+		popupTemplate: function(geo, data){
+			// console.log(geo);
+			var html="<div><p>NOTHING</p></div>";
+			var state = STATE_SYMBOLS_REVERSE[geo.id];
+			if(DATA != null){
+				var d = DATA[currentYear][state];
+				html = dodHTML(d);
+			}
+			// console.log(html);
+			return html;
+		},
 	},
 	done: function(datamap){
 		datamap.svg.selectAll(".datamaps-subunit").on("click", function(d){
@@ -67,6 +79,23 @@ var map = new Datamap({
 			}
 			updateMarks();
 
+		})
+		.on("mouseover", function(geo){ 
+			var state = STATE_SYMBOLS_REVERSE[geo.id];
+			if(DATA != null){
+				var d = DATA[currentYear][state];
+				// html = dodHTML(d);
+				plotMapDod(d);
+			}
+			// console.log(html);
+			// return html;
+		})
+		.on("mouseout", function(geo){
+			var state = STATE_SYMBOLS_REVERSE[geo.id];
+			if(DATA != null){
+				var d = DATA[currentYear][state];
+				hideMapDetailsOnDemand(d);
+			}
 		});
 	}
 });
@@ -96,7 +125,7 @@ var dropdown = d3.select(".dropdown")
 
 
 var dodScatter = null;
-
+var dodMap = null;
 
 
 
@@ -231,6 +260,10 @@ function plotInit(){
     .attr("class", "tooltip")
     .style("opacity", 0);
 
+    dodMap = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
 	//x axis
   	chart.append("g")
 		.attr("transform", "translate(0," + height + ")")
@@ -298,16 +331,26 @@ function dataUnpacker(d){
 	return result;
 }
 
-function plotDetailsOnDemand(d){
+function plotDetailsOnDemand(d, dod){
 	if(focus_state == null || (focus_state.Name == d.Name)){
 		// return;
-		dodScatter.transition()
+		dod.transition()
 			.duration(200)
 			.style("opacity", .9);
-		dodScatter.html(dodHTML(d))
-		.style("left", (d3.event.pageX + 5) + "px")
-	    .style("top", (d3.event.pageY - 28) + "px");
+		dod.html(dodHTML(d));
 	}
+}
+
+function plotScatterDod(d){
+	plotDetailsOnDemand(d, dodScatter);
+	dodScatter.style("left", (d3.event.pageX + 5) + "px")
+	.style("top", (d3.event.pageY - 28) + "px");
+}
+
+function plotMapDod(d){
+	plotDetailsOnDemand(d, dodMap);
+	dodMap.style("left", (d3.event.pageX - 400) + "px")
+	.style("top", (d3.event.pageY - 28) + "px");//TODO - CHANGE
 }
 
 function dodHTML(d){
@@ -335,10 +378,18 @@ function textPercentages(d, arr){
 	return text;
 }
 
-function hidePlotDetailsOnDemand(d){
-	dodScatter.transition()
+function hideDod(d, dod){
+	dod.transition()
 		.duration(500)
 		.style("opacity", 0);
+}
+
+function hidePlotDetailsOnDemand(d){
+	hideDod(d, dodScatter);
+}
+
+function hideMapDetailsOnDemand(d){
+	hideDod(d, dodMap);
 }
 
 
@@ -358,7 +409,7 @@ function drawMarks(data){
 		.attr("cx", xMap)
 		.attr("cy", yMap)
 		.style("fill", function(d){return colors(cValue(d))})
-		.on("mouseover", plotDetailsOnDemand)
+		.on("mouseover", plotScatterDod)
 		.on("mouseout",hidePlotDetailsOnDemand)
 		.on("mousedown", function(d){
 			console.log("mousedown "+d.Name)
