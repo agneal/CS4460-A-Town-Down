@@ -196,7 +196,8 @@ var mapColorAxis = d3.svg.axis()
 var mapColorMap = function(d){return mapColorScale(mapColorValue(d))};
 
 var cValue = function(d){return STATE_REGION[d["Name"]];};
-var colors = d3.scale.category10();
+// var colors = d3.scale.category10();
+var colors = d3.scale.ordinal().range(["#e41a1c", "#377eb8", "#4daf4a", "#984ea3"]);
 
 var yCategoryMin = null;
 var yCategoryMax = null;
