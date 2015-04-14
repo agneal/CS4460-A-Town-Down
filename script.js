@@ -50,8 +50,8 @@ var map = new Datamap({
 	fills: STATE_COLORS,
 	data: {},
 	geographyConfig: {
-		borderColor: "#444",
-		highlightOnHover: true,
+		borderColor: "#111",
+		highlightOnHover: false,
 		highlightFillColor: "#aaebff",
 		highlightBorderColor: '#000',
 		// popupOnHover: true,
