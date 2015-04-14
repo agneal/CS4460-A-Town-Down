@@ -154,7 +154,7 @@ var violentCrimeRate = aggregateCrimeClosure(VIOLENT_CRIMES);
 var propertyCrimeRate = aggregateCrimeClosure(PROPERTY_CRIMES);
 
 
-var xAxisLabel = "Unemployment Rate";
+var xAxisLabel = "Unemployment Rate (%)";
 var xValue = function(d){ return d[UNEMPLOYMENT];};
 var xScale = d3.scale.linear().range([0, width]);
 var xMap = function(d){return xScale(xValue(d));};
@@ -269,9 +269,11 @@ function plotInit(){
 
 	//x axis
   	chart.append("g")
+  		.style("fill","white")
 		.attr("transform", "translate(0," + height + ")")
 		.call(xAxis)
 		.append("text")
+		.style("fill", "white")
 		.attr("x", width)
 		.attr("y", -6) //-6
 		.style("text-anchor", "end")
@@ -280,6 +282,7 @@ function plotInit(){
 	//y axis
 	yAxisSVG = chart.append("g").attr("class", "yaxis");
 	yAxisSVG
+		.style("fill","white")
 		.call(yAxis)
 		.append("text")
 		.attr("class", "yaxislabel")
@@ -287,12 +290,14 @@ function plotInit(){
 		.attr("y", 6) //6
 		.attr("dy", ".71em")
 		.style("text-anchor", "end")
+		.style("fill","white")
 		.text(yAxisLabel);
 
 
 
 	var mapLegend = d3.select("#map").append("g");
 	mapLegend.attr("class", "xaxis")
+		.style("fill","white")
 		.attr("transform", "translate(80," + 10+")")
 		.call(mapColorAxis);
 		// .append("text")
@@ -309,12 +314,12 @@ function plotInit(){
 				"width": 50,
 				"height": 10,
 				"fill": STATE_COLORS[d],
-				"stroke":"#000",
+				"stroke":"white",
 			});
 			// console.log("FOREACH "+d);
 	}
 
-	sliderDiv.call(slider);
+	sliderDiv.style("fill","white").call(slider);
 
 
 }
@@ -442,6 +447,7 @@ function drawMarks(data){
 		.attr("y", 9)
 		.attr("dy", ".35em")
 		.style("text-anchor", "end")
+		.style("fill", "white")
 		.text(function(d) {return d;});
 
 
