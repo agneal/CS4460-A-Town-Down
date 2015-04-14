@@ -14,10 +14,11 @@ NUM_DIVISIONS = 7;
 var UNEMPLOYMENT = "Unemployment";
 
 var screenWidth = screen.availWidth;
-console.log("SCREEN WIDTH" + (screenWidth/2));
+var screenHeight = screen.availHeight;
+// console.log("SCREEN WIDTH" + (screenWidth/2));
 // chart.style.width = (screenWidth/2 - 10) + "px";
-document.getElementById("map").style.width = (screenWidth/2 - 100) + "px";
-
+document.getElementById("map").style.width = (screenWidth/2 - 40) + "px";
+document.getElementById("map").style.height = (screenHeight/2 +150) + "px"
 
 var focus_state = null;
 
@@ -299,12 +300,12 @@ function plotInit(){
 	var mapLegend = d3.select("#map").append("g");
 	mapLegend.attr("class", "xaxis")
 		.style("fill","white")
-		.attr("transform", "translate(80," + 10+")")
+		.attr("transform", "translate(135," + 10+")")
 		.call(mapColorAxis)
 		.append("text")
 		.attr("class", "yaxislabel")
 		.style("fill","white")
-		.attr("x", 0)
+		.attr("x", 20)
 		.attr("y",25)
 		.text("All Violent Crime - Incidents/10k People");
 		// .append("text")
