@@ -276,6 +276,7 @@ function plotInit(){
 		.call(xAxis)
 		.append("text")
 		.style("fill", "white")
+		.style("font-size", "12px")
 		.attr("x", width)
 		.attr("y", -6) //-6
 		.style("text-anchor", "end")
@@ -287,6 +288,7 @@ function plotInit(){
 		.style("fill","white")
 		.call(yAxis)
 		.append("text")
+		.style("font-size", "12px")
 		.attr("class", "yaxislabel")
 		.attr("transform", "rotate(-90)")
 		.attr("y", 6) //6
@@ -303,6 +305,7 @@ function plotInit(){
 		.attr("transform", "translate(135," + 10+")")
 		.call(mapColorAxis)
 		.append("text")
+		.style("font-size", "12px")
 		.attr("class", "yaxislabel")
 		.style("fill","white")
 		.attr("x", 20)
@@ -327,7 +330,7 @@ function plotInit(){
 			// console.log("FOREACH "+d);
 	}
 
-	sliderDiv.style("fill","white").call(slider);
+	sliderDiv.style("fill","white").style("font-size", "15px").call(slider);
 
 
 }
@@ -442,7 +445,7 @@ function drawMarks(data){
 		.data(colors.domain())
 		.enter().append("g")
 		.attr("class", "legend")
-		.attr("transform", function(d, i) {return "translate(20," + (i*40) + ")"; });
+		.attr("transform", function(d, i) {return "translate(-10," + (i*40 ) + ")"; });
 
 	legend.append("rect")
 		.attr("x", width - 60)
