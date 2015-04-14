@@ -77,6 +77,9 @@ var map = new Datamap({
 			else if(focus_state.Name===state){
 					focus_state = null;
 			}
+			else{
+				focus_state = null;
+			}
 			updateMarks();
 
 		})
@@ -349,8 +352,8 @@ function plotScatterDod(d){
 
 function plotMapDod(d){
 	plotDetailsOnDemand(d, dodMap);
-	dodMap.style("left", (d3.event.pageX - 400) + "px")
-	.style("top", (d3.event.pageY - 28) + "px");//TODO - CHANGE
+	dodMap.style("left", (d3.event.pageX - parseInt(dodMap.style("width"))-10) + "px")
+	.style("top", (d3.event.pageY - 20) + "px");//TODO - CHANGE
 }
 
 function dodHTML(d){
