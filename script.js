@@ -119,8 +119,8 @@ var dropdown = d3.select(".dropdown")
 			.duration(200)
 			.ease("sin-in-out")
 			.call(yAxis);
-			// .text("CHANGED");
 		chart.select(".yaxislabel").text(newYaxisVal);
+		d3.select("body").select("#map").select(".yaxislabel").text(newYaxisVal+" - Incidents/10k People");
 		updateMarks();
 		dropdownVal = newYaxisVal;
 
@@ -299,7 +299,13 @@ function plotInit(){
 	mapLegend.attr("class", "xaxis")
 		.style("fill","white")
 		.attr("transform", "translate(80," + 10+")")
-		.call(mapColorAxis);
+		.call(mapColorAxis)
+		.append("text")
+		.attr("class", "yaxislabel")
+		.style("fill","white")
+		.attr("x", 0)
+		.attr("y",25)
+		.text("All Violent Crime - Incidents/10k People");
 		// .append("text")
 		// .attr("x", 0)
 		// .attr("y", 0) //-6
@@ -363,15 +369,16 @@ function plotMapDod(d){
 
 function dodHTML(d){
 	var html = d["Name"] + " -- "+d["Population"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " people<hr />";
+	html += "<p>"+Math.round(yValue(d))+" incidents / 10k people</p>";
 	if(dropdownVal == "All Violent Crime"){
+		html += "<hr/>"
 		html += textPercentages(d, VIOLENT_CRIMES);
 	}
 	else if (dropdownVal === "All Property Crime"){
+		html += "<hr/>"
 		html += textPercentages(d, PROPERTY_CRIMES);
 	}
-	else{
-		html += "<p>"+dropdownVal+": "+yValue(d)+" incidents / 10k people</p>";
-	}
+
 	return html;
 		
 }
@@ -502,6 +509,8 @@ function updateMarks(){
 		.transition()
 		.duration(200)
 		.call(mapColorAxis);
+	d3.select("#map").select(".xaxislabel")
+		.text("CHANGEED");
 
 	for(var state in currentYearData){
 		var idx=-1;
