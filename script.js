@@ -384,6 +384,7 @@ function dodHTML(d){
 		html += textPercentages(d, PROPERTY_CRIMES);
 	}
 
+	html +="<hr /><p>"+d[UNEMPLOYMENT]+"% Unemployment</p>"
 	return html;
 		
 }
