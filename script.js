@@ -302,7 +302,7 @@ function plotInit(){
 	var mapLegend = d3.select("#map").append("g");
 	mapLegend.attr("class", "xaxis")
 		.style("fill","white")
-		.attr("transform", "translate(135," + 10+")")
+		.attr("transform", "translate(135," + 450+")")
 		.call(mapColorAxis)
 		.append("text")
 		.style("font-size", "12px")
