@@ -41,7 +41,7 @@ var height = 500 - margin.top - margin.bottom;
 
 var chart = d3.select(".chart")
 	.attr("width", width + margin.left + margin.right)
-	.attr("height", height + margin.top + margin.bottom)
+	.attr("height", height + margin.top + margin.bottom + 40)
 	.append("g") 
 	.attr("transform", "translate(" + (margin.left) + "," + margin.top + ")");
 
@@ -446,22 +446,28 @@ function drawMarks(data){
 		.data(colors.domain())
 		.enter().append("g")
 		.attr("class", "legend")
-		.attr("transform", function(d, i) {return "translate(-10," + (i*40 ) + ")"; });
+		.attr("transform", function(d, i) {return "translate("+ ((i*100)-540) + ", 490)"; });
 
 	legend.append("rect")
-		.attr("x", width - 60)
+		.attr("x", width -60)
 		.attr("width", 18)
 		.attr("height", 18)
 		.style("fill", colors);
 
       // draw legend text
 	legend.append("text")
-		.attr("x", width - 65)
+		.attr("x", function(d){ return width + d.length*5-30})
 		.attr("y", 9)
 		.attr("dy", ".35em")
 		.style("text-anchor", "end")
 		.style("fill", "white")
 		.text(function(d) {return d;});
+	
+	chart.append("text")
+		.attr("x", width-200)
+		.attr("y", height+53)
+		.style("fill","white")
+		.text("*size of mark encodes state population");
 
 
 
