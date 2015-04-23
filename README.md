@@ -4,7 +4,7 @@ CS4460 - Crime Data
 Running the Project
 ---
 
-Run a local server at the projected directory, for example:
+Run a local server at the project directory, for example:
 
 ```
 python -m"SimpleHTTPServer"
